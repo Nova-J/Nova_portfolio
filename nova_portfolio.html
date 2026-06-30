@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nova J — Developer & AI Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+/* ── Reset & Variables ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0a0a;
+  --bg2:      #111111;
+  --bg3:      #161616;
+  --text:     #f0ede6;
+  --muted:    #6b6660;
+  --accent:   #c8a96e;
+  --accent2:  #7eb8a4;
+  --border:   rgba(255,255,255,0.07);
+  --font-display: 'Playfair Display', serif;
+  --font-mono:    'DM Mono', monospace;
+  --font-body:    'Outfit', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* ── Noise texture ───────────────────────────────────────────── */
+.noise {
+  position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Nav ─────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 4rem;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex; gap: 2.5rem;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  color: var(--accent) !important;
+  border: 1px solid var(--accent);
+  padding: 0.4rem 1rem;
+  border-radius: 2px;
+}
+.nav-cta:hover { background: var(--accent); color: var(--bg) !important; }
+
+/* ── Hero ────────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 8rem 4rem 4rem;
+  position: relative; overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 13rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  margin-bottom: 2.5rem;
+}
+
+.hero-name .line {
+  display: block;
+  opacity: 0;
+  animation: fadeUp 0.9s forwards;
+}
+.hero-name .line:nth-child(1) { animation-delay: 0.4s; }
+.hero-name .line:nth-child(2) { animation-delay: 0.55s; }
+.italic { font-style: italic; color: var(--accent); }
+
+.hero-meta {
+  max-width: 540px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+}
+
+.hero-title {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+.sep { color: var(--accent); margin: 0 0.5rem; }
+
+.hero-desc {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgba(240,237,230,0.65);
+}
+
+.hero-scroll {
+  position: absolute; bottom: 2.5rem; left: 4rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Geometric decorations */
+.hero-geo {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.geo-1 {
+  width: 420px; height: 420px;
+  right: -80px; top: 10%;
+  border: 1px solid rgba(200,169,110,0.12);
+  animation: spin 30s linear infinite;
+}
+.geo-2 {
+  width: 240px; height: 240px;
+  right: 80px; top: calc(10% + 90px);
+  border: 1px solid rgba(126,184,164,0.15);
+  animation: spin 20s linear infinite reverse;
+}
+
+/* ── Sections ────────────────────────────────────────────────── */
+.section {
+  padding: 7rem 4rem;
+  border-bottom: 1px solid var(--border);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+.section.alt { background: var(--bg2); max-width: 100%; }
+.section.alt > * { max-width: 1200px; margin-left: auto; margin-right: auto; }
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  margin-bottom: 3.5rem;
+}
+.section-title em { font-style: italic; color: var(--accent); }
+
+/* ── Skills ──────────────────────────────────────────────────── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.skill-card {
+  background: var(--bg);
+  padding: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: background 0.2s;
+}
+.skill-card:hover { background: var(--bg3); }
+.skill-card.visible { opacity: 1; transform: none; transition: opacity 0.5s, transform 0.5s; }
+
+.skill-icon {
+  font-size: 1.5rem;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+}
+
+.skill-card h3 {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.skill-card ul {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 0.4rem;
+}
+.skill-card ul li {
+  font-size: 1rem;
+  color: var(--text);
+}
+.skill-card ul li::before { content: '—  '; color: var(--accent); font-size: 0.8em; }
+
+.badge {
+  margin-top: 1rem;
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--accent2);
+  border: 1px solid var(--accent2);
+  padding: 0.25rem 0.6rem;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+/* ── Project ─────────────────────────────────────────────────── */
+.alt .section-label, .alt .section-title { padding: 0 4rem; }
+
+.project-card {
+  margin: 0 4rem;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 3rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 3rem;
+  align-items: start;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.project-card:hover { border-color: rgba(200,169,110,0.3); }
+
+.project-number {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-top: 0.3rem;
+}
+
+.project-body h3 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.project-body p {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: rgba(240,237,230,0.65);
+  max-width: 560px;
+  margin-bottom: 1.5rem;
+}
+
+.project-tags {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+}
+.project-tags span {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(200,169,110,0.3);
+  padding: 0.3rem 0.7rem;
+  border-radius: 2px;
+}
+
+.project-geo {
+  width: 120px; height: 120px;
+  border: 1px solid rgba(200,169,110,0.1);
+  border-radius: 50%;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* ── Timeline ────────────────────────────────────────────────── */
+.timeline {
+  display: flex; flex-direction: column;
+  gap: 0;
+  border-left: 1px solid var(--border);
+  margin-left: 1rem;
+  margin-bottom: 3rem;
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 2rem;
+  padding: 2rem 2rem 2rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  opacity: 0;
+  transform: translateX(-10px);
+}
+.timeline-item.visible {
+  opacity: 1; transform: none;
+  transition: opacity 0.5s, transform 0.5s;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -5px; top: 2.5rem;
+  width: 9px; height: 9px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.timeline-year {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  margin-top: 0.2rem;
+}
+
+.timeline-content h3 {
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+.timeline-content p {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.timeline-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+}
+.timeline-badge.ongoing { background: rgba(126,184,164,0.15); color: var(--accent2); }
+
+.score {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--accent);
+  margin-top: 0.5rem;
+}
+
+/* ── Awards ──────────────────────────────────────────────────── */
+.awards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.award-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  display: flex; gap: 1rem; align-items: flex-start;
+  transition: border-color 0.2s;
+}
+.award-card:hover { border-color: rgba(200,169,110,0.3); }
+.award-icon { font-size: 1.5rem; flex-shrink: 0; }
+.award-card strong { display: block; font-size: 0.95rem; margin-bottom: 0.3rem; }
+.award-card p { font-size: 0.8rem; color: var(--muted); }
+
+/* ── Contact ─────────────────────────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.contact-card {
+  background: var(--bg);
+  padding: 2rem;
+  display: flex; flex-direction: column; gap: 0.4rem;
+  text-decoration: none; color: inherit;
+  position: relative;
+  transition: background 0.2s;
+}
+.contact-card:hover { background: var(--bg3); }
+.no-link { cursor: default; }
+.contact-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.contact-value { font-size: 1rem; }
+.contact-arrow {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  color: var(--accent); font-size: 1rem;
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+footer {
+  padding: 2rem 4rem;
+  display: flex; justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+/* ── Animations ──────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { gap: 1.2rem; }
+  .nav-links li:not(:last-child) { display: none; }
+  .hero { padding: 7rem 1.5rem 3rem; }
+  .hero-scroll { left: 1.5rem; }
+  .section { padding: 5rem 1.5rem; }
+  .alt .section-label, .alt .section-title { padding: 0 1.5rem; }
+  .project-card { margin: 0 1.5rem; grid-template-columns: 1fr; }
+  .project-geo { display: none; }
+  footer { padding: 1.5rem; flex-direction: column; gap: 0.5rem; }
+}
+/* ── NJ Chatbot Widget ───────────────────────────────────────── */
+
+/* Floating bubble */
+.nj-chat-bubble {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+  width: 54px;
+  height: 54px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(200, 169, 110, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.nj-chat-bubble:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 32px rgba(200, 169, 110, 0.5);
+}
+
+/* Ping animation */
+.nj-chat-ping {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background: var(--accent2);
+  border-radius: 50%;
+  animation: nj-ping 2s ease-in-out infinite;
+}
+@keyframes nj-ping {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Chat window */
+.nj-chat-window {
+  position: fixed;
+  bottom: 6rem;
+  right: 2rem;
+  z-index: 1000;
+  width: 360px;
+  max-height: 520px;
+  background: var(--bg2);
+  border: 1px solid rgba(200, 169, 110, 0.2);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: translateY(16px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+}
+.nj-chat-window.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+/* Header */
+.nj-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nj-chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.nj-chat-avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+.nj-chat-name {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  text-transform: uppercase;
+}
+.nj-chat-status {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--accent2);
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+.nj-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent2);
+  border-radius: 50%;
+  display: inline-block;
+  animation: nj-ping 2s ease-in-out infinite;
+}
+.nj-chat-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+  transition: color 0.2s;
+}
+.nj-chat-close:hover { color: var(--text); }
+
+/* Messages area */
+.nj-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.nj-chat-messages::-webkit-scrollbar { width: 4px; }
+.nj-chat-messages::-webkit-scrollbar-track { background: transparent; }
+.nj-chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.nj-msg {
+  display: flex;
+  flex-direction: column;
+}
+.nj-msg-bot { align-items: flex-start; }
+.nj-msg-user { align-items: flex-end; }
+
+.nj-msg-bubble {
+  max-width: 82%;
+  padding: 0.7rem 1rem;
+  border-radius: 3px;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  font-family: var(--font-body);
+  font-weight: 300;
+}
+.nj-msg-bot .nj-msg-bubble {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 2px 12px 12px 12px;
+}
+.nj-msg-user .nj-msg-bubble {
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 400;
+  border-radius: 12px 2px 12px 12px;
+}
+
+/* Typing indicator */
+.nj-typing .nj-msg-bubble {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.85rem 1rem;
+}
+.nj-typing-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--muted);
+  border-radius: 50%;
+  animation: nj-bounce 1.2s ease-in-out infinite;
+}
+.nj-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.nj-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes nj-bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-6px); }
+}
+
+/* Input row */
+.nj-chat-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nj-chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 1rem 1.2rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text);
+  font-weight: 300;
+}
+.nj-chat-input::placeholder { color: var(--muted); }
+.nj-chat-send {
+  background: var(--accent);
+  border: none;
+  color: var(--bg);
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  border-radius: 0;
+  margin: 0.5rem 0.6rem;
+  border-radius: 2px;
+}
+.nj-chat-send:hover { background: var(--accent2); }
+
+@media (max-width: 768px) {
+  .nj-chat-window {
+    width: calc(100vw - 2rem);
+    right: 1rem;
+    bottom: 5rem;
+    max-height: 460px;
+  }
+  .nj-chat-bubble { bottom: 1.2rem; right: 1rem; }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Noise overlay -->
+  <div class="noise"></div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-logo">NJ</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#contact" class="nav-cta">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="about">
+    <div class="hero-tag">Available for opportunities</div>
+    <h1 class="hero-name">
+      <span class="line">Nova</span>
+      <span class="line italic">J.</span>
+    </h1>
+    <div class="hero-meta">
+      <div class="hero-title">Software Developer <span class="sep">×</span> AI/ML Engineer</div>
+      <p class="hero-desc">
+        Result-driven developer proficient in C++, Python &amp; Java with hands-on experience
+        in full-stack development and AI systems.
+        Currently pursuing B.Sc. in AI &amp; Machine Learning at MS University, Tirunelveli.
+      </p>
+    </div>
+    <div class="hero-scroll">scroll ↓</div>
+    <div class="hero-geo geo-1"></div>
+    <div class="hero-geo geo-2"></div>
+  </section>
+
+  <!-- Skills -->
+  <section class="section" id="skills">
+    <div class="section-label">01 / Skills</div>
+    <h2 class="section-title">Technical<br><em>Arsenal</em></h2>
+    <div class="skills-grid">
+
+      <div class="skill-card" data-delay="0">
+        <div class="skill-icon">{ }</div>
+        <h3>Languages</h3>
+        <ul>
+          <li>C++</li>
+          <li>Python</li>
+          <li>Java</li>
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>R</li>
+        </ul>
+      </div>
+
+      <div class="skill-card" data-delay="100">
+        <div class="skill-icon">⬡</div>
+        <h3>Database</h3>
+        <ul>
+          <li>MongoDB</li>
+        </ul>
+        <div class="badge">Certified Associate 2025</div>
+      </div>
+
+      <div class="skill-card" data-delay="200">
+        <div class="skill-icon">↗</div>
+        <h3>Tools & Platforms</h3>
+        <ul>
+          <li>GitHub</li>
+        </ul>
+      </div>
+
+      <div class="skill-card" data-delay="300">
+        <div class="skill-icon">◈</div>
+        <h3>Domains</h3>
+        <ul>
+          <li>Full-Stack Dev</li>
+          <li>Artificial Intelligence</li>
+          <li>Debugging &amp; Optimization</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="section alt" id="projects">
+    <div class="section-label">02 / Projects</div>
+    <h2 class="section-title">Featured<br><em>Work</em></h2>
+    <div class="project-card">
+      <div class="project-number">001</div>
+      <div class="project-body">
+        <h3>AI MCQ Quiz Generator</h3>
+        <p>
+          Built a Streamlit web app that turns any PDF into a ready-to-use multiple-choice
+          quiz. Users upload a PDF and choose a difficulty level — an AI model (via Groq)
+          reads the content and writes exam-style questions with four options each.
+          Includes Google login, an instant question preview, CSV export, and one-click
+          publishing into a real, auto-graded Google Form.
+        </p>
+        <div class="project-tags">
+          <span>Python</span>
+          <span>Streamlit</span>
+          <span>Groq AI</span>
+          <span>Google Forms API</span>
+          <span>OAuth</span>
+        </div>
+      </div>
+      <div class="project-geo"></div>
+    </div>
+  </section>
+
+  <!-- Education -->
+  <section class="section" id="education">
+    <div class="section-label">03 / Education</div>
+    <h2 class="section-title">Academic<br><em>Journey</em></h2>
+    <div class="timeline">
+
+      <div class="timeline-item" data-delay="0">
+        <div class="timeline-year">2024 – 27</div>
+        <div class="timeline-content">
+          <div class="timeline-badge ongoing">Ongoing</div>
+          <h3>B.Sc. Artificial Intelligence & Machine Learning</h3>
+          <p>MS University — Tirunelveli</p>
+        </div>
+      </div>
+
+      <div class="timeline-item" data-delay="100">
+        <div class="timeline-year">2023 – 24</div>
+        <div class="timeline-content">
+          <h3>Higher Secondary (12th Grade)</h3>
+          <p>Sivanthi Matriculation Hr. Sec. School — Tirunelveli</p>
+          <div class="score">80%</div>
+        </div>
+      </div>
+
+      <div class="timeline-item" data-delay="200">
+        <div class="timeline-year">2021 – 22</div>
+        <div class="timeline-content">
+          <h3>Secondary (10th Grade)</h3>
+          <p>Sivanthi Matriculation Hr. Sec. School — Tirunelveli</p>
+          <div class="score">85%</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Awards -->
+    <div class="awards">
+      <div class="award-card">
+        <div class="award-icon">🏆</div>
+        <div>
+          <strong>100/100 in Computer Science</strong>
+          <p>Perfect score in Higher Secondary Board Examination</p>
+        </div>
+      </div>
+      <div class="award-card">
+        <div class="award-icon">🎓</div>
+        <div>
+          <strong>MongoDB Certified Developer</strong>
+          <p>Associate Certification — 2025</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section contact-section" id="contact">
+    <div class="section-label">04 / Contact</div>
+    <h2 class="section-title">Let's<br><em>Connect</em></h2>
+    <div class="contact-grid">
+      <a href="mailto:Novasolomon18@gmail.com" class="contact-card">
+        <span class="contact-label">Email</span>
+        <span class="contact-value">Novasolomon18@gmail.com</span>
+        <span class="contact-arrow">↗</span>
+      </a>
+      <a href="tel:9344960253" class="contact-card">
+        <span class="contact-label">Phone</span>
+        <span class="contact-value">+91 9344960253</span>
+        <span class="contact-arrow">↗</span>
+      </a>
+      <div class="contact-card no-link">
+        <span class="contact-label">Location</span>
+        <span class="contact-value">Tirunelveli, Tamil Nadu</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <span>Nova J © 2025</span>
+    <span>Built with passion · Tirunelveli</span>
+  </footer>
+
+
+
+  <!-- Chatbot Widget -->
+  <div class="nj-chat-bubble" id="njChatBubble" onclick="toggleChat()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <div class="nj-chat-ping"></div>
+  </div>
+
+  <div class="nj-chat-window" id="njChatWindow">
+    <div class="nj-chat-header">
+      <div class="nj-chat-header-left">
+        <div class="nj-chat-avatar">NJ</div>
+        <div>
+          <div class="nj-chat-name">Nova J — AI</div>
+          <div class="nj-chat-status"><span class="nj-dot"></span>Online &amp; Responsive</div>
+        </div>
+      </div>
+      <button class="nj-chat-close" onclick="toggleChat()">✕</button>
+    </div>
+
+    <div class="nj-chat-messages" id="njMessages">
+      <div class="nj-msg nj-msg-bot">
+        <div class="nj-msg-bubble">
+          Hey there 👋 I'm Nova's AI assistant. Ask me anything about Nova's skills, projects, education, or how to get in touch!
+        </div>
+      </div>
+    </div>
+
+    <div class="nj-chat-input-row">
+      <input
+        type="text"
+        id="njInput"
+        class="nj-chat-input"
+        placeholder="Ask about Nova's skills, projects…"
+        onkeydown="if(event.key==='Enter') sendMessage()"
+      />
+      <button class="nj-chat-send" onclick="sendMessage()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+// Intersection Observer for scroll-in animations
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const delay = el.dataset.delay || 0;
+        setTimeout(() => el.classList.add('visible'), parseInt(delay));
+        observer.unobserve(el);
+      }
+    });
+  },
+  { threshold: 0.15 }
+);
+
+document.querySelectorAll('.skill-card, .timeline-item').forEach((el) => {
+  observer.observe(el);
+});
+
+// Active nav link highlight on scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+const navObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach((link) => {
+          link.style.color = link.getAttribute('href') === `#${id}` ? 'var(--text)' : '';
+        });
+      }
+    });
+  },
+  { threshold: 0.4 }
+);
+
+sections.forEach((s) => navObserver.observe(s));
+
+// Smooth reveal for project card
+const projectCard = document.querySelector('.project-card');
+if (projectCard) {
+  const projObs = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        projectCard.style.opacity = '1';
+        projectCard.style.transform = 'translateY(0)';
+        projObs.unobserve(projectCard);
+      }
+    },
+    { threshold: 0.2 }
+  );
+  projectCard.style.opacity = '0';
+  projectCard.style.transform = 'translateY(20px)';
+  projectCard.style.transition = 'opacity 0.6s, transform 0.6s';
+  projObs.observe(projectCard);
+}
+// ── Nova J Portfolio Chatbot ─────────────────────────────────
+// Strictly answers only about Nova J's portfolio information
+
+const GROQ_API_KEY = "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";
+const GROQ_MODEL = "openai/gpt-oss-120b";
+
+const NOVA_CONTEXT = `
+You are an AI assistant embedded in Nova J's personal portfolio website.
+You ONLY answer questions about Nova J based on the information below.
+If asked anything outside this scope, politely say you can only answer questions about Nova J's portfolio.
+Do NOT make up or infer any information not listed here.
+Keep answers concise and friendly. Use plain text, no markdown formatting.
+
+=== NOVA J — PORTFOLIO INFORMATION ===
+
+FULL NAME: Nova J
+ROLE: Software Developer × AI/ML Engineer
+LOCATION: Tirunelveli, Tamil Nadu, India
+EMAIL: Novasolomon18@gmail.com
+PHONE: +91 9344960253
+STATUS: Available for opportunities
+
+BIO:
+Result-driven developer proficient in C++, Python & Java with hands-on experience in full-stack development and AI systems. Currently pursuing B.Sc. in AI & Machine Learning at MS University, Tirunelveli.
+
+TECHNICAL SKILLS:
+- Languages: C++, Python, Java, HTML, CSS, R
+- Database: MongoDB (MongoDB Certified Associate 2025)
+- Tools & Platforms: GitHub
+- Domains: Full-Stack Development, AI, Debugging & Optimization
+
+PROJECTS:
+1. AI MCQ Quiz Generator
+   - A web app (built with Streamlit) that turns any PDF into a multiple-choice quiz automatically
+   - Users upload a PDF and pick a difficulty level; an AI model (via Groq) reads the content and writes exam-style questions with four answer options each
+   - Lets users log in with Google, preview the generated questions, download them as a CSV file, or push them straight into a real Google Form (auto-graded quiz mode) with one click
+   - Tags: Python, Streamlit, Groq AI, Google Forms API, OAuth, PDF Processing
+
+EDUCATION:
+1. B.Sc. Artificial Intelligence & Machine Learning (2024–2027, Ongoing)
+   - MS University, Tirunelveli
+2. Higher Secondary / 12th Grade (2023–2024)
+   - Sivanthi Matriculation Hr. Sec. School, Tirunelveli
+   - Score: 80%
+3. Secondary / 10th Grade (2021–2022)
+   - Sivanthi Matriculation Hr. Sec. School, Tirunelveli
+   - Score: 85%
+
+ACHIEVEMENTS / AWARDS:
+1. Perfect score — 100/100 in Computer Science (Higher Secondary Board Examination)
+2. MongoDB Certified Developer Associate — 2025
+
+CONTACT:
+- Email: Novasolomon18@gmail.com
+- Phone: +91 9344960253
+- Location: Tirunelveli, Tamil Nadu, India
+`;
+
+const conversationHistory = [];
+
+function toggleChat() {
+  const win = document.getElementById('njChatWindow');
+  win.classList.toggle('open');
+  if (win.classList.contains('open')) {
+    document.getElementById('njInput').focus();
+  }
+}
+
+function appendMessage(role, text) {
+  const container = document.getElementById('njMessages');
+  const div = document.createElement('div');
+  div.className = `nj-msg nj-msg-${role === 'user' ? 'user' : 'bot'}`;
+  const bubble = document.createElement('div');
+  bubble.className = 'nj-msg-bubble';
+  bubble.textContent = text;
+  div.appendChild(bubble);
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  const container = document.getElementById('njMessages');
+  const div = document.createElement('div');
+  div.className = 'nj-msg nj-msg-bot nj-typing';
+  div.id = 'njTyping';
+  div.innerHTML = `<div class="nj-msg-bubble">
+    <span class="nj-typing-dot"></span>
+    <span class="nj-typing-dot"></span>
+    <span class="nj-typing-dot"></span>
+  </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('njTyping');
+  if (el) el.remove();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('njInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.disabled = true;
+  document.querySelector('.nj-chat-send').disabled = true;
+
+  appendMessage('user', text);
+  conversationHistory.push({ role: 'user', content: text });
+
+  showTyping();
+
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + GROQ_API_KEY,
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        stream: false,
+        messages: [
+          { role: 'system', content: NOVA_CONTEXT },
+          ...conversationHistory,
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Groq response:', data);
+
+    const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't get a response.";
+
+    removeTyping();
+    appendMessage('bot', reply);
+    conversationHistory.push({ role: 'assistant', content: reply });
+
+  } catch (err) {
+    removeTyping();
+    appendMessage('bot', "Hmm, I'm having trouble connecting. Please try again in a moment.");
+    console.error('Chatbot error:', err);
+  }
+
+  input.disabled = false;
+  document.querySelector('.nj-chat-send').disabled = false;
+  input.focus();
+}
+
+  </script>
+</body>
+</html>
